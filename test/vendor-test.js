@@ -4,6 +4,38 @@ const app = require('../app');
 const Customer = require('../models/customers');
 const Vendor = require('../models/vendors');
 
+describe('test to let vendor add more items to the machine', function() {
+
+  afterEach(function(done) {
+    Customer.deleteMany({}).then(done());
+    });
+
+  it('vendor api endpoint will allow addition of item to customer schema', function(done) {
+    request(app)
+    .post('/api/vendor/items')
+    .send({item: 'Cherry Coke', quantity: 4, cost: 75})
+    .expect(201)
+    .expect(function(res) {
+      Customer.count().then(function(count) {
+        expect(count).to.equal(1);
+      });
+    }).end(done);
+  });
+});
+
+// it('cats api endpoint allows creation of cats', function(done) {
+//     request(app)
+//       .post('/api/cats')
+//       // without this the request wouldn't receive anything
+//       .send({name: 'Pencylvester', fluffiness: 0})
+//       .expect(201)
+//       .expect(function(res) {
+//         Cat.count().then(function(count) {
+//           expect(count).to.equal(4);
+//         });
+//       }).end(done);
+//   });
+
 describe('basic vendor api endpoint tests', function() {
 
   beforeEach(function(done) {
@@ -21,7 +53,7 @@ describe('basic vendor api endpoint tests', function() {
 
   it('vendor api endpoint returns all items as json', function(done) {
     request(app)
-    .get('/api/vendor/items')
+    .get('/api/vendor/purchases')
     .expect(200)
     .expect(function(res) {
       expect(res.body[0].item).to.equal('Coke');
