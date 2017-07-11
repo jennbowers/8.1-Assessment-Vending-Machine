@@ -4,10 +4,28 @@ const app = require('./app');
 const Customer = require('./models/customers');
 const Vendor = require('./models/vendors');
 
+describe('basic api endpoint tests', function() {
+  
+
+
+
+
+});
 
 describe('basic vendor tests', function() {
   afterEach(function(done) {
     Vendor.deleteMany({}).then(done());
+  });
+
+  it('vendor test should clean up after itself', function(done) {
+  // creates a new cat because we know we can
+    const vendor = new Vendor().save().then(function(newVendor) {
+      // count all the cats in the Cats database
+      Vendor.count().then(function(count) {
+        expect(count).to.equal(1);
+        done();
+      });
+    });
   });
 
   it('can create a vendor item in the db and find it with mongoose', function(done) {
@@ -24,6 +42,18 @@ describe('basic customer tests', function() {
   afterEach(function(done) {
     Customer.deleteMany({}).then(done());
     });
+
+  it('customer test should clean up after itself', function(done) {
+  // creates a new cat because we know we can
+    const customer = new Customer().save().then(function(newCustomer) {
+      // count all the cats in the Cats database
+      Customer.count().then(function(count) {
+        expect(count).to.equal(1);
+        done();
+      });
+    });
+  });
+
 
   it('can create a customer item in the db and find it with mongoose', function(done) {
     const customer = new Customer({item: 'Coke', quantity: 10, cost: 50}).save().then(function(newCustomer) {
