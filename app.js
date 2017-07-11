@@ -3,40 +3,39 @@ const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const parseurl = require('parseurl');
+mongoose.Promise = require('bluebird');
 
 const app = express();
 
-mongoose.Promise = require('bluebird');
-mongoose.connect('mongodb://localhost:27017/jbvending');
+const nodeEnv = process.env.NODE_ENV || "development";
+const config = require('./config.json')[nodeEnv];
+
+
+// mongoose.connect('mongodb://localhost:27017/jbvending');
 
 app.use('/static', express.static('static'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+mongoose.connect(config.mongoURL);
 
 // API ENDPOINTS
 // render index page with all vending machine items available
-app.get('/api/items/', function(req, res) {
-  res.json({});
-});
 
-// on index if vendor to log in page
-app.get('/login', function(req, res) {
-  res.redirect('/login', {});
-});
 
-// on index form for choosing item
-app.get('/api/items/:id', function(req, res) {
-  res.redirect('/detail');
+app.get('/api/sanity', function(req, res) {
+  res.json({hello: 'Jenn'});
 });
-
-// on index form for vendors only to go to edit page
-app.get('/update', function(req, res) {
-  res.redirect('update', {});
-});
-
-//
 
 app.listen(3000, function() {
   console.log('Successfully created express application');
 });
+
+module.exports = app;
+
+// GET /api/customer/items - get a list of items
+// POST /api/customer/items/:itemId/purchases - purchase an item
+// GET /api/vendor/purchases - get a list of all purchases with their item and date/time
+// GET /api/vendor/money - get a total amount of money accepted by the machine
+// POST /api/vendor/items - add a new item not previously existing in the machine
+// PUT /api/vendor/items/:itemId - update item quantity, description, and cost
