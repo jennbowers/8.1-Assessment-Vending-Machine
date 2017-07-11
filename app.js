@@ -23,6 +23,11 @@ mongoose.connect(config.mongoURL);
 
 // API ENDPOINTS
 // render index page with all vending machine items available
+app.get('/api/vendor/items', function(req, res) {
+  Vendor.find({}).then(function(vendors) {
+    res.json(vendors);
+  });
+});
 
 app.get('/api/customer/items', function(req, res) {
   Customer.find({}).then(function(customers) {
