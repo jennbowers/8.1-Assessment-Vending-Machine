@@ -3,6 +3,8 @@ const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const parseurl = require('parseurl');
+const Customer = require('./models/customers');
+const Vendor = require('./models/vendors');
 mongoose.Promise = require('bluebird');
 
 const app = express();
@@ -22,6 +24,11 @@ mongoose.connect(config.mongoURL);
 // API ENDPOINTS
 // render index page with all vending machine items available
 
+app.get('/api/customer/items', function(req, res) {
+  Customer.find({}).then(function(customers) {
+    res.json(customers);
+  });
+});
 
 app.get('/api/sanity', function(req, res) {
   res.json({hello: 'Jenn'});

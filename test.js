@@ -4,8 +4,46 @@ const app = require('./app');
 const Customer = require('./models/customers');
 const Vendor = require('./models/vendors');
 
-describe('basic api endpoint tests', function() {
-  
+describe('basic customer api endpoint tests', function() {
+
+  beforeEach(function(done) {
+    Customer.insertMany([
+      {item: 'Coke', quantity: 5, cost: 10},
+      {item: 'Pepsi', quantity: 15, cost: 100},
+      {item: 'Dr. Pepper', quantity: 1, cost: 1},
+      {item: 'Mtn Dew', quantity: 2, cost: 2}
+    ]).then(done());
+  });
+
+  afterEach(function(done) {
+    Customer.deleteMany({}).then(done());
+    });
+
+  it('customer api endpoint returns all items as json', function(done) {
+    request(app)
+    .get('/api/customer/items')
+    .expect(200)
+    .expect(function(res) {
+      expect(res.body[0].item).to.equal('Coke');
+      expect(res.body[1].item).to.equal('Pepsi');
+      expect(res.body[2].item).to.equal('Dr. Pepper');
+      expect(res.body[3].item).to.equal('Mtn Dew');
+    }).end(done);
+  });
+
+  // /api/customer/items
+  // it('cats api endpoint returns all cats as json', function(done) {
+  //   request(app)
+  //   .get('/api/cats')
+  //   .expect(200)
+  //   .expect(function(res) {
+  //     // you can put a different name in there to test to make sure it is right
+  //     expect(res.body[0].name).to.equal('Skittles');
+  //     expect(res.body[1].name).to.equal('Garfield');
+  //     expect(res.body[2].name).to.equal('Princess Cat Face');
+  //     expect(res.body.length).to.equal(3);
+  //   }).end(done);
+  // });
 
 
 
