@@ -23,21 +23,31 @@ mongoose.connect(config.mongoURL);
 
 // API ENDPOINTS
 // render index page with all vending machine items available
-app.get('/api/vendor/purchases', function(req, res) {
-  Vendor.find({}).then(function(vendors) {
-    res.json(vendors);
-  });
-});
-
 app.get('/api/customer/items', function(req, res) {
   Customer.find({}).then(function(customers) {
     res.json(customers);
   });
 });
 
+app.get('/api/vendor/purchases', function(req, res) {
+  Vendor.find({}).then(function(vendors) {
+    res.json(vendors);
+  });
+});
+
 app.post('/api/vendor/items', function(req, res) {
   const newCustomer = new Customer(req.body).save().then(function(item) {
     res.status(201).json({});
+  });
+});
+
+app.get('/api/vendor/money', function(req, res) {
+  Vendor.find({}).then(function(items) {
+    var total = 0;
+    for(var i = 0; i < items.length; i++) {
+      total += items[i].totalCost;
+    }
+    res.json(total);
   });
 });
 
@@ -54,9 +64,9 @@ module.exports = app;
 
 // POST /api/customer/items/:itemId/purchases - purchase an item
 // GET /api/vendor/money - get a total amount of money accepted by the machine
-// --POST /api/vendor/items - add a new item not previously existing in the machine
 // PUT /api/vendor/items/:itemId - update item quantity, description, and cost
 
 // -----DONE
 // GET /api/customer/items - get a list of items
 // GET /api/vendor/purchases - get a list of all purchases with their item and date/time
+// --POST /api/vendor/items - add a new item not previously existing in the machine

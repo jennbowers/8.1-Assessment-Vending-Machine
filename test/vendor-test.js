@@ -4,6 +4,31 @@ const app = require('../app');
 const Customer = require('../models/customers');
 const Vendor = require('../models/vendors');
 
+describe('test to get the total money amount from the machine', function() {
+
+  beforeEach(function(done) {
+    Vendor.insertMany([
+      {item: 'Coke', quantity: 5, totalCost: 10},
+      {item: 'Pepsi', quantity: 15, totalCost: 100},
+      {item: 'Dr. Pepper', quantity: 1, totalCost: 1},
+      {item: 'Mtn Dew', quantity: 2, totalCost: 2}
+    ]).then(done());
+  });
+
+  afterEach(function(done) {
+    Vendor.deleteMany({}).then(done());
+    });
+
+  it('can take the total amount of money from the vendor schema and display it on the screen', function(done) {
+    request(app)
+    .get('/api/vendor/money')
+    .expect(200)
+    .expect(function(res) {
+      expect(res.body).to.equal(113);
+    }).end(done);
+  });
+});
+
 describe('test to let vendor add more items to the machine', function() {
 
   afterEach(function(done) {
@@ -13,7 +38,7 @@ describe('test to let vendor add more items to the machine', function() {
   it('vendor api endpoint will allow addition of item to customer schema', function(done) {
     request(app)
     .post('/api/vendor/items')
-    .send({item: 'Cherry Coke', quantity: 4, cost: 75})
+    .send({item: 'Cherry Coke', quantity: 4, totalCost: 75})
     .expect(201)
     .expect(function(res) {
       Customer.count().then(function(count) {
@@ -23,27 +48,14 @@ describe('test to let vendor add more items to the machine', function() {
   });
 });
 
-// it('cats api endpoint allows creation of cats', function(done) {
-//     request(app)
-//       .post('/api/cats')
-//       // without this the request wouldn't receive anything
-//       .send({name: 'Pencylvester', fluffiness: 0})
-//       .expect(201)
-//       .expect(function(res) {
-//         Cat.count().then(function(count) {
-//           expect(count).to.equal(4);
-//         });
-//       }).end(done);
-//   });
-
 describe('basic vendor api endpoint tests', function() {
 
   beforeEach(function(done) {
     Vendor.insertMany([
-      {item: 'Coke', quantity: 5, cost: 10},
-      {item: 'Pepsi', quantity: 15, cost: 100},
-      {item: 'Dr. Pepper', quantity: 1, cost: 1},
-      {item: 'Mtn Dew', quantity: 2, cost: 2}
+      {item: 'Coke', quantity: 5, totalCost: 10},
+      {item: 'Pepsi', quantity: 15, totalCost: 100},
+      {item: 'Dr. Pepper', quantity: 1, totalCost: 1},
+      {item: 'Mtn Dew', quantity: 2, totalCost: 2}
     ]).then(done());
   });
 
@@ -70,9 +82,7 @@ describe('basic vendor tests', function() {
   });
 
   it('vendor test should clean up after itself', function(done) {
-  // creates a new cat because we know we can
     const vendor = new Vendor().save().then(function(newVendor) {
-      // count all the cats in the Cats database
       Vendor.count().then(function(count) {
         expect(count).to.equal(1);
         done();
@@ -81,10 +91,10 @@ describe('basic vendor tests', function() {
   });
 
   it('can create a vendor item in the db and find it with mongoose', function(done) {
-    const vendor = new Vendor({item: 'Coke', quantity: 2, cost: 50}).save().then(function(newVendor) {
+    const vendor = new Vendor({item: 'Coke', quantity: 2, totalCost: 50}).save().then(function(newVendor) {
       expect(newVendor.item).to.equal('Coke');
       expect(newVendor.quantity).to.equal(2);
-      expect(newVendor.cost).to.equal(50);
+      expect(newVendor.totalCost).to.equal(50);
       done();
     });
   });
@@ -109,6 +119,6 @@ describe('sanity test', function() {
 
 // A vendor should be able to see total amount of money in machine
 // A vendor should be able to update the description, quantity, and costs of items in the machine
-// A vendor should be able to add a new item to the machine
 // ---------------TESTS DONE
 // A vendor should be able to see a list of all purchases with their time of purchase
+// A vendor should be able to add a new item to the machine

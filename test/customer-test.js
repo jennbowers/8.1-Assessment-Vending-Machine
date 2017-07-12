@@ -40,9 +40,7 @@ describe('basic customer tests', function() {
     });
 
   it('customer test should clean up after itself', function(done) {
-  // creates a new cat because we know we can
     const customer = new Customer().save().then(function(newCustomer) {
-      // count all the cats in the Cats database
       Customer.count().then(function(count) {
         expect(count).to.equal(1);
         done();
