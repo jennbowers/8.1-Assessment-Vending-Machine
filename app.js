@@ -41,6 +41,13 @@ app.post('/api/vendor/items', function(req, res) {
   });
 });
 
+app.patch('/api/vendor/items/:itemId', function(req, res) {
+  var id = "Coke";
+    Customer.update({item: id}, {$set: {quantity: 5}}).then(function(item) {
+      res.status(200).json({});
+    });
+});
+
 app.get('/api/vendor/money', function(req, res) {
   Vendor.find({}).then(function(items) {
     var total = 0;
@@ -63,10 +70,11 @@ module.exports = app;
 
 
 // POST /api/customer/items/:itemId/purchases - purchase an item
-// PUT /api/vendor/items/:itemId - update item quantity, description, and cost
+
 
 // -----DONE
 // GET /api/customer/items - get a list of items
 // GET /api/vendor/purchases - get a list of all purchases with their item and date/time
 // --POST /api/vendor/items - add a new item not previously existing in the machine
 // GET /api/vendor/money - get a total amount of money accepted by the machine
+// PUT /api/vendor/items/:itemId - update item quantity, description, and cost

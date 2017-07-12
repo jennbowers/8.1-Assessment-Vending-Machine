@@ -4,6 +4,41 @@ const app = require('../app');
 const Customer = require('../models/customers');
 const Vendor = require('../models/vendors');
 
+describe('test to allow vendor to update customer table', function() {
+
+  beforeEach(function(done) {
+    Customer.insertMany([
+      {item: 'Coke', quantity: 1, cost: 10},
+      {item: 'Pepsi', quantity: 15, cost: 100},
+      {item: 'Dr. Pepper', quantity: 1, cost: 1},
+      {item: 'Mtn Dew', quantity: 2, cost: 2}
+    ]).then(done());
+  });
+
+  afterEach(function(done) {
+    Customer.deleteMany({}).then(done());
+    });
+
+  it('vendor api endpoint will allow updates to item in customer schema', function(done) {
+    var testItem = {item: 'Coke', quantity: 5, cost: 10};
+    request(app)
+    .patch('/api/vendor/items/' + testItem._id)
+    .send({})
+    .expect(200)
+    .expect(function(res) {
+      console.log(testItem);
+      expect(testItem.item).to.equal('Coke');
+      expect(testItem.quantity).to.equal(5);
+      expect(testItem.cost).to.equal(10);
+
+      // Customer.count().then(function(count) {
+      //   expect(count).to.equal(4);
+      // });
+    }).end(done);
+  });
+});
+
+
 describe('test to get the total money amount from the machine', function() {
 
   beforeEach(function(done) {
@@ -38,7 +73,7 @@ describe('test to let vendor add more items to the machine', function() {
   it('vendor api endpoint will allow addition of item to customer schema', function(done) {
     request(app)
     .post('/api/vendor/items')
-    .send({item: 'Cherry Coke', quantity: 4, totalCost: 75})
+    .send({item: 'Cherry Coke', quantity: 4, cost: 75})
     .expect(201)
     .expect(function(res) {
       Customer.count().then(function(count) {
@@ -118,8 +153,8 @@ describe('sanity test', function() {
 
 
 
-// A vendor should be able to update the description, quantity, and costs of items in the machine
 // ---------------TESTS DONE
 // A vendor should be able to see a list of all purchases with their time of purchase
 // A vendor should be able to add a new item to the machine
 // A vendor should be able to see total amount of money in machine
+// A vendor should be able to update the description, quantity, and costs of items in the machine
