@@ -4,6 +4,43 @@ const app = require('../app');
 const Customer = require('../models/customers');
 const Vendor = require('../models/vendors');
 
+describe('customer should be able to make a purchase from the machine', function() {
+  beforeEach(function(done) {
+    Customer.insertMany([
+      {item: 'Coke', quantity: 5, cost: 10},
+      {item: 'Pepsi', quantity: 15, cost: 100},
+      {item: 'Dr. Pepper', quantity: 1, cost: 1},
+      {item: 'Mtn Dew', quantity: 2, cost: 2}
+    ]).then(done());
+  });
+
+afterEach(function(done) {
+  Customer.deleteMany({}).then(done());
+  });
+
+  it('should allow a customer to pay and get change if needed', function(done) {
+    request(app)
+    .post('/api/customer/items/Coke/purchases')
+    .send({})
+    .expect(201)
+    .expect(function(res) {
+      expect(change).to.equal(40);
+    });
+    done();
+  });
+
+  it('should allow a customer to choose an item from the machine', function(done) {
+    request(app)
+    .post('/api/customer/items/Coke/purchases')
+    .send({})
+    .expect(201)
+    .expect(function(res) {
+      Vendor.count().then(function(count) {
+        expect(count).to.equal(1);
+      });
+    }).end(done());
+  });
+});
 
 describe('basic customer api endpoint tests', function() {
 

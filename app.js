@@ -29,6 +29,48 @@ app.get('/api/customer/items', function(req, res) {
   });
 });
 
+app.post('/api/customer/items/Coke/purchases', function(req, res) {
+  // updating the customer table to reflect the new quantities
+  // var id = "Coke";
+  var amountBought = 1;
+  var amountPaid = 50;
+  var msg = '';
+
+  Customer.findOne({item: 'Coke'}).then(function(result) {
+    console.log(result);
+    var totalPrice = amountBought * result.cost;
+    if (!result || result.quantity === 0){
+      msg = 'There are no more left, pick another item';
+      return msg;
+    } else if (amountBought > result.quantity) {
+      msg = 'There are not enough in the machine';
+      return msg;
+    } else {
+      result.quantity -= amountBought;
+      result.save().then(function(newItem) {
+        const newVendor = new Vendor({item: newItem.item, quantity: amountBought, totalCost: totalPrice}).save().then(function() {
+          if (amountPaid > totalPrice){
+            var change = amountPaid - totalPrice;
+            msg = 'Your change is equal to: ' + change;
+            console.log(change);
+            return msg;
+          } else if (amountPaid < totalPrice) {
+            var owed = totalPrice - amountPaid;
+            console.log(owed);
+            msg = 'You still owe: ' + owed;
+            return msg;
+          } else if (amountPaid === totalPrice) {
+            msg = 'Thank you!';
+            return msg;
+          }
+          res.status(201).json({});
+        });
+      });
+    }
+  });
+
+});
+
 app.get('/api/vendor/purchases', function(req, res) {
   Vendor.find({}).then(function(vendors) {
     res.json(vendors);

@@ -59,7 +59,7 @@ describe('test to get the total money amount from the machine', function() {
     .get('/api/vendor/money')
     .expect(200)
     .expect(function(res) {
-      expect(res.body).to.equal(113);
+      expect(res.body).to.equal(123);
     }).end(done);
   });
 });
